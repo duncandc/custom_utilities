@@ -5,8 +5,21 @@
 # Return the coordinates of the points.
 
 import numpy as np
+from __future__ import division
 
 def sample_spherical_cap(ra, dec, da, N_points):
+    '''
+    randomly sample a spherical cap
+    
+    parameters
+    ra: angular coordinate to center on
+    dec: angular coordinate to center on
+    da: angular radius of spherical cap
+    N_points: number of points to sample cap
+    
+    returns
+    coords: list of N_pints (ra,dec) coordinate pairs in spherical cap region
+    '''
 
     from numpy import random
     from numpy import sin, cos
@@ -53,6 +66,7 @@ def _sphdist(ra1, dec1, ra2, dec2):
     Uses vicenty distance formula - a bit slower than others, but
     numerically stable.
     """
+    
     from numpy import radians, degrees, sin, cos, arctan2, hypot 
 
     # terminology from the Vicenty formula - lambda and phi and
