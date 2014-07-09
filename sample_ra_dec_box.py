@@ -19,15 +19,16 @@ def main():
     N=1000
     
     sample = sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N)
-    print sample
     
     ra,dec = zip(*sample)
     
-    plt.plot([ra_min,ra_min,ra_max,ra_max,ra_min],[dec_min,dec_max,dec_max,dec_min,dec_min],color='orange')
+    plt.plot([ra_min,ra_min,ra_max,ra_max,ra_min],\
+             [dec_min,dec_max,dec_max,dec_min,dec_min],color='orange')
     plt.plot(ra,dec,'.',color='blue')
     plt.xlim([205,225])
     plt.ylim([50,60])
     plt.show()
+    
 
 def sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N_points):
     '''

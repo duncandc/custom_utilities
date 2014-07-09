@@ -5,8 +5,58 @@
 # (x,y) pairs. This function returns True or False. This is an implementation
 # of the ray casting method.
 
-def inside(arg):
-    x,y,poly=arg
+def main():
+    '''
+    example showing the use of inside()
+    define a square polygon and test points
+    plot the test points a color by inside/outside determination
+    '''
+    import matplotlib.pyplot as plt
+    import numpy as np
+    
+    #define polygon, e.g. a square centered on the origin
+    square = [(-1,-1),(-1,1),(1,1),(1,-1),(-1,-1)]
+    
+    #create some points to test
+    x = (np.random.random_sample(100)-0.5)*4.0
+    y = (np.random.random_sample(100)-0.5)*4.0
+    #format as a list of tuples
+    p = zip(x,y)
+    
+    #run through each point to check inside/outside
+    result = np.empty(100, dtype=int)
+    for i in range(0,len(p)):
+        result[i] = inside(p[i][0],p[i][1],square)
+    
+    #unzip polygone to make it easy to plot
+    x,y = zip(*square)
+    
+    #define color of points: inside==blue, outside==red
+    color=['red','blue']
+    
+    #plot polygon and points
+    plt.plot(x,y,color='orange')
+    for i in range(0,len(p)):
+        plt.plot(p[i][0],p[i][1],'o', color=color[result[i]])
+    plt.xlim([-2,2])
+    plt.ylim([-2,2])
+    plt.show()
+
+
+
+def inside(x,y,poly):
+    '''
+    determines if a point is inside a polygon
+    
+    parameters
+    x: x-coordinate of test point
+    y: y-corrdinate of test point
+    poly: a list of (x,y) pairs defining the vertices of the polygon
+    
+    returns
+    True if inside the polygon
+    False if outside the polygon
+    '''
 
     n = len(poly)
     inside = False
@@ -24,3 +74,6 @@ def inside(arg):
         p1x,p1y = p2x,p2y
 
     return inside
+
+if __name__ == '__main__':
+    main()

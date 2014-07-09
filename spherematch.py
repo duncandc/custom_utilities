@@ -1,27 +1,39 @@
-"""
-Match two sets of on-sky coordinates to each other.
-I.e., find nearest neighbor of one that's in the other.
- 
-Similar in purpose to IDL's spherematch, but totally different implementation.
- 
-Requires numpy and scipy.
-"""
+#!/usr/bin/env python
+
+#Duncan Campbell
+#Yale University
+#July 8, 2014
+#note: This is a modified version of Erik Tollerud's code.
 
 from __future__ import division
 import numpy as np
 import math
-try:
-  from scipy.spatial import cKDTree as KDT
-except ImportError:
-  from scipy.spatial import KDTree as KDT
+from scipy.spatial import cKDTree as KDT
 
-import time
- 
- 
- 
+def main():
+    'example of matching a data set to shuffled version of itself'
+    from sample_ra_dec_box import sample_ra_dec_box
+    import random
+    ra_min, ra_max = (209.0,220.0)
+    dec_min, dec_max = (51.0,58.0)
+    N=1000
+    
+    sample1 = sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N)
+    sample2 = sample1[:]
+    random.shuffle(sample2)
+    
+    ra1,dec1 = zip(*sample1)
+    ra2,dec2 = zip(*sample2)
+    
+    idxs1, idxs2, ds = spherematch(ra1,dec1,ra2,dec2,tol=0.01,nnearest=1,threads=1)
+    sample1 = np.array(sample1)
+    sample2 = np.array(sample2)
+    print sample1[idxs1]==sample2[idxs2]
+
+
 def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
     """
-    Finds matches in one catalog to another.
+    Determines the matches between two catalogues of sources with ra,dec coordinates
  
     Parameters
     ra1 : array-like
@@ -40,9 +52,9 @@ def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
         second nearest neighbor, etc.  Particularly useful if you want to get
         the nearest *non-self* neighbor of a catalog.  To do this, use:
         ``spherematch(ra, dec, ra, dec, nnearest=2)``
+        if nnearest==0, all matches are returned
  
     Returns
-    -------
     idx1 : int array
         Indecies into the first catalog of the matches. Will never be
         larger than `ra1`/`dec1`.
@@ -53,18 +65,19 @@ def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
         Distance (in degrees) between the matches
     """
  
-
+    #convert arguments into arrays for ease of use
     ra1 = np.array(ra1, copy=False)
     dec1 = np.array(dec1, copy=False)
     ra2 = np.array(ra2, copy=False)
     dec2 = np.array(dec2, copy=False)
 
- 
+    #check to see if arguments are consistent
     if ra1.shape != dec1.shape:
         raise ValueError('ra1 and dec1 do not match!')
     if ra2.shape != dec2.shape:
         raise ValueError('ra2 and dec2 do not match!')  
 
+    #convert spherical coordinates into cartesian coordinates
     x1, y1, z1 = _spherical_to_cartesian_fast(ra1.ravel(), dec1.ravel(), threads) 
 
     # this is equivalent to, but faster than just doing np.array([x1, y1, z1])
@@ -73,6 +86,7 @@ def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
     coords1[:, 1] = y1
     coords1[:, 2] = z1   
 
+    #convert spherical coordinates into cartesian coordinates
     x2, y2, z2 = _spherical_to_cartesian_fast(ra2.ravel(), dec2.ravel(), threads)
 
     # this is equivalent to, but faster than just doing np.array([x1, y1, z1])
@@ -81,7 +95,9 @@ def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
     coords2[:, 1] = y2
     coords2[:, 2] = z2
  
+    #create tree structure
     kdt = KDT(coords2)
+    #find neighbors
     if nnearest == 1:
         idxs2 = kdt.query(coords1)[1]
     elif nnearest == 0 and (tol is not None):  #if you want all matches
@@ -100,11 +116,13 @@ def spherematch(ra1, dec1, ra2, dec2, tol=None, nnearest=1, threads=1):
     else:
         raise ValueError('invalid nnearest ' + str(nnearest))
  
+    #calculate distances between matches
     ds = _great_circle_distance_fast(ra1, dec1, ra2[idxs2], dec2[idxs2], threads) 
 
-
+    #if tolerance is None, then all objects will have a match
     idxs1 = np.arange(ra1.size)
  
+    #remove matches that are beyond the tolerance seperation
     if (tol is not None) and nnearest != 0:
         msk = ds < tol
         idxs1 = idxs1[msk]
@@ -133,6 +151,8 @@ def _spherical_to_cartesian_fast(ra, dec, threads):
     """
     (Private internal function)
     Inputs in degrees.  Outputs x,y,z
+    
+    A faster version than the function above.
     """
     import numexpr as ne
 
@@ -219,3 +239,7 @@ def _great_circle_distance_fast(ra1, dec1, ra2, dec2, threads):
     pi=math.pi
 
     return ne.evaluate('(arctan2(numer, denom))*180.0/pi')
+
+
+if __name__ == '__main__':
+    main()

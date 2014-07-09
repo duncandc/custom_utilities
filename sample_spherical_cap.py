@@ -1,11 +1,33 @@
+#!/usr/bin/env python
+
 # Duncan Campbell
 # Written: August 2, 2013
 # Yale University
 # Sample a spherical cap region of a sphere with N random points. 
 # Return the coordinates of the points.
 
-import numpy as np
 from __future__ import division
+import numpy as np
+
+def main():
+    #example code calling sample_spherical_cap() to give random ra,dec points in a specified 
+    #region
+    import matplotlib.pyplot as plt
+    #define region, e.g. roughly the W3 CFHTLS field
+    ra = 215.0
+    dec = 55.0
+    da = 4.0
+    N=1000
+    
+    sample = sample_spherical_cap(ra,dec,da,N)
+    
+    ra,dec = zip(*sample)
+    
+    plt.plot(ra,dec,'.',color='blue')
+    plt.xlim([205,225])
+    plt.ylim([50,60])
+    plt.show()
+    
 
 def sample_spherical_cap(ra, dec, da, N_points):
     '''
@@ -84,3 +106,7 @@ def _sphdist(ra1, dec1, ra2, dec2):
     denom = sin(phis) * sin(phif) + cos(phis) * cos(phif) * cos(dlamb)
 
     return degrees(np.arctan2(numer, denom))
+
+
+if __name__ == '__main__':
+    main()
