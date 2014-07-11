@@ -93,29 +93,6 @@ def test_cylinder():
     test_point = point3D(10,0,0)
     assert cyl.inside(test_point)==False, "inside calculation incorrect"
     
-    cyl = cylinder(center=point3D(0.0,0.0,0.0), radius = 0.5, length=4.0, normal=np.array([0.0,0.0,1.0]))
-    
-    test_points = []
-    for i in range(0,10000):
-        test_points.append(point3D((np.random.random(3)-0.5)*5.0))
-    
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    for i in range(0,10000):
-        print cyl.inside(test_points[i]), test_points[i].values()
-        #if True:
-        if cyl.inside(test_points[i]):
-            print test_points[i].values()
-            ax.plot([test_points[i].values()[0]],[test_points[i].values()[1]],[test_points[i].values()[2]], '.')
-    ax.set_xlim([-3,3])
-    ax.set_ylim([-3,3])
-    ax.set_zlim([-3,3])
-    plt.show()
-    
-    assert True==False, 'poops'
-    
     
     
     

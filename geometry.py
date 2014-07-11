@@ -1,3 +1,4 @@
+from __future__ import division
 import math
 import numpy as np
 
@@ -231,8 +232,8 @@ class sphere(object):
 
 
 class cylinder(object):
-    def __init__(self, center=point3D(0.0,0.0,0.0), radius = 1.0, length=1.0, normal=np.array([0.0,0.0,1.0])):
-    #def __init__(self, center, radius, length, normal):
+    def __init__(self, center=point3D(0.0,0.0,0.0), radius = 1.0, length=1.0, \
+                 normal=np.array([0.0,0.0,1.0])):
         self.center = center
         self.normal = normal
         self.radius = radius
@@ -242,33 +243,62 @@ class cylinder(object):
         return math.pi * self.radius**2.0 * self.length
     
     def circum_r(self):
+        '''
+        radius to circumscribe the volume given the center
+        '''
         r = math.sqrt(radius**2.0+(length/2.0)**2.0)
         return r
     
     def inside(self,point3D=point3D(0.0,0.0,0.0)):
-        o = np.array(self.center.values())
+        '''
+        Calculate whether a point is inside or outside the volume.
+        Parameters
+            self: polygon3D object which defines volume
+            point3D object to test
+        Returns
+            True: point is inside the volume
+            False: point is outside the volume
+        '''
+        x=point3D.x1
+        y=point3D.x2
+        z=point3D.x3
+        #define coordinate origin
+        x0,y0,z0 = np.array(self.center.values())
+        #recenter on origin
+        x = x-x0
+        y = y-y0
+        z = z-z0
+        #calculate new basis vectors
         v1 = self.normal
-        #v1 = np.array(self.center.values())
+        #generate a random vector that is not parallel to v1
         ran_v = np.random.random(3)
-        while np.dot(v1,ran_v)/(np.sqrt(np.dot(v1,v1)*np.dot(ran_v,ran_v)))<0.02:
+        angle = np.dot(v1,ran_v)/(np.sqrt(np.dot(v1,v1)*np.dot(ran_v,ran_v)))
+        while angle<0.02:
             ran_v = np.random.random(3)
+            angle = np.dot(v1,ran_v)/(np.sqrt(np.dot(v1,v1)*np.dot(ran_v,ran_v)))
+        
+        #define new basis vectors
+        e1= np.array([1,0,0])
+        e2= np.array([0,1,0])
+        e3= np.array([0,0,1])
+        v1 = v1/np.sqrt(v1[0]**2.0+v1[1]**2.0+v1[2]**2.0) #normalize
         v2 = np.cross(v1,ran_v)
+        v2 = v2/np.sqrt(v2[0]**2.0+v2[1]**2.0+v2[2]**2.0) #normalize
         v3 = np.cross(v1,v2)
+        v3 = v3/np.sqrt(v3[0]**2.0+v3[1]**2.0+v3[2]**2.0) #normalize
         
-        v2 = v2/(np.dot(v2,v2))
-        v3 = v3/(np.dot(v3,v3))
+        #calculate coordinate of point given new basis        
+        Q = np.array([[np.dot(e1,v1),np.dot(e1,v2),np.dot(e1,v3)],
+                      [np.dot(e2,v1),np.dot(e2,v2),np.dot(e2,v3)],
+                      [np.dot(e3,v1),np.dot(e3,v2),np.dot(e3,v3)],])
+        xp,yp,zp = np.dot(Q.T,np.array([x,y,z]))
         
-        print v1, v2, v3
+        L_proj = np.fabs(xp)
+        R_proj = np.sqrt(yp**2.0+zp**2.0)
         
-        dl = (point3D.x1-o[0])*v1[0] + (point3D.x2-o[1])*v1[1] + (point3D.x3-o[2])*v1[2]        
-        dp = (point3D.x1-o[0])*v2[0] + (point3D.x2-o[1])*v2[1] + (point3D.x3-o[2])*v2[2]
-        dq = (point3D.x1-o[0])*v3[0] + (point3D.x2-o[1])*v3[1] + (point3D.x3-o[2])*v3[2] 
-        dr = math.sqrt(dp**2.0+dq**2.0)
+        if L_proj>self.length/2.0: return False
+        if R_proj>self.radius: return False
         
-        if dr>self.radius: return False
-        elif dl>self.length/2.0: return False
-        elif dl<-self.length/2.0: return False
-        else: return True
-        
+        return True
 
 
