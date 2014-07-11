@@ -10,19 +10,48 @@ class point2D(object):
     def distance(self,point2D):
         return math.sqrt((self.x1-point2D.x1)**2.0+(self.x2-point2D.x2)**2.0)
         
+    def distance_periodic(self, point2D, box_size=0.0):
+        if not isinstance(point2D,type(self)): 
+            print type(point2D)
+            raise ValueError('must be given 2D point')
+        delta_x = math.fabs(self.x1 - point2D.x1)
+        if delta_x > box_size/2.0: delta_x = box_size - delta_x
+        delta_y = math.fabs(self.x2 - point2D.x2)
+        if delta_y > box_size/2.0: delta_y = box_size - delta_y
+        d = math.sqrt(delta_x ** 2.0 + delta_y ** 2.0)
+        return d
+        
     def values(self):
         return self.x1, self.x2
 
 
 class point3D(object):
     def __init__(self, x=0.0, y=0.0, z=0.0):
-        self.x1 = x
-        self.x2 = y
-        self.x3 = z
+        if type(x) is np.ndarray:
+            self.x1 = x[0]
+            self.x2 = x[1]
+            self.x3 = x[2]
+        else:
+            self.x1 = x
+            self.x2 = y
+            self.x3 = z
         
     def distance(self,point3D):
         return math.sqrt((self.x1-point3D.x1)**2.0+(self.x2-point3D.x2)**2.0\
         +(self.x3-point3D.x3)**2.0)
+        
+    def distance_periodic(self, point3D, box_size=0.0):
+        if not isinstance(point3D,type(self)): 
+            print type(point3D)
+            raise ValueError('must be given 3D point')
+        delta_x = math.fabs(self.x1 - point3D.x1)
+        if delta_x > box_size/2.0: delta_x = box_size - delta_x
+        delta_y = math.fabs(self.x2 - point3D.x2)
+        if delta_y > box_size/2.0: delta_y = box_size - delta_y
+        delta_z = math.fabs(self.x3 - point3D.x3)
+        if delta_z > box_size/2.0: delta_z = box_size - delta_z
+        d = math.sqrt(delta_x ** 2.0 + delta_y ** 2.0 + delta_z ** 2.0)
+        return d
         
     def values(self):
         return self.x1, self.x2, self.x3
@@ -31,6 +60,10 @@ class point3D(object):
 class polygon2D(object):
     def __init__(self,v=[]):
         self.vertices = v # list of point objects
+        for vert in self.vertices:
+            if not isinstance(vert,point2D):
+                print type(vert)
+                raise ValueError('vertices must be 2D points')
     
     def area(self,positive=False):
         A = 0.0
@@ -150,8 +183,6 @@ class face(object):
         n = np.cross(v1,v2)
         n = n/(math.sqrt(n[0]**2.0+n[1]**2.0+n[2]**2.0))
         return n
-        
-    
 
 
 class polygon3D(object):
@@ -160,6 +191,12 @@ class polygon3D(object):
         unq_verts = list({vert.values() for sublist in self.faces for vert in sublist})
         self.vertices = [point3D(unq_verts[i][0],unq_verts[i][1],unq_verts[i][2])\
                          for i in range(len(unq_verts))] 
+        for f in self.faces:
+            print type(f)
+            if not isinstance(f,face):
+                print type(f)
+                raise ValueError('faces must be of type face')
+                
     def volume(self):
         vol = 0.0
         for f in self.faces: # the faces
@@ -191,3 +228,47 @@ class sphere(object):
     
     def volume(self):
         return (4.0/3.0)*math.pi*self.radius**3.0
+
+
+class cylinder(object):
+    def __init__(self, center=point3D(0.0,0.0,0.0), radius = 1.0, length=1.0, normal=np.array([0.0,0.0,1.0])):
+    #def __init__(self, center, radius, length, normal):
+        self.center = center
+        self.normal = normal
+        self.radius = radius
+        self.length = length
+        
+    def volume(self):
+        return math.pi * self.radius**2.0 * self.length
+    
+    def circum_r(self):
+        r = math.sqrt(radius**2.0+(length/2.0)**2.0)
+        return r
+    
+    def inside(self,point3D=point3D(0.0,0.0,0.0)):
+        o = np.array(self.center.values())
+        v1 = self.normal
+        #v1 = np.array(self.center.values())
+        ran_v = np.random.random(3)
+        while np.dot(v1,ran_v)/(np.sqrt(np.dot(v1,v1)*np.dot(ran_v,ran_v)))<0.02:
+            ran_v = np.random.random(3)
+        v2 = np.cross(v1,ran_v)
+        v3 = np.cross(v1,v2)
+        
+        v2 = v2/(np.dot(v2,v2))
+        v3 = v3/(np.dot(v3,v3))
+        
+        print v1, v2, v3
+        
+        dl = (point3D.x1-o[0])*v1[0] + (point3D.x2-o[1])*v1[1] + (point3D.x3-o[2])*v1[2]        
+        dp = (point3D.x1-o[0])*v2[0] + (point3D.x2-o[1])*v2[1] + (point3D.x3-o[2])*v2[2]
+        dq = (point3D.x1-o[0])*v3[0] + (point3D.x2-o[1])*v3[1] + (point3D.x3-o[2])*v3[2] 
+        dr = math.sqrt(dp**2.0+dq**2.0)
+        
+        if dr>self.radius: return False
+        elif dl>self.length/2.0: return False
+        elif dl<-self.length/2.0: return False
+        else: return True
+        
+
+

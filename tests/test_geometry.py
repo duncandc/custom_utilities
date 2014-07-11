@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from ..geometry import point3D, face, polygon3D, sphere, point2D, polygon2D, circle
+from ..geometry import cylinder
 import numpy as np
 import math
 
@@ -58,12 +59,17 @@ def test_distance2D():
     p2 = point2D(0,1)
     dist = p1.distance(p2)
     assert dist==1.0, "distance calc incorrect"
+    dist = p1.distance_periodic(p2,1.5)
+    assert dist==0.5
+    
     
 def test_distance3D():
     p1 = point3D(0,0,0)
     p2 = point3D(0,1,0)
     dist = p1.distance(p2)
     assert dist==1.0, "distance calc incorrect"
+    dist = p1.distance_periodic(p2,1.5)
+    assert dist==0.5
     
 def test_face():
     v1 = point3D(0,0,1)
@@ -77,6 +83,38 @@ def test_face():
     assert center == (0.5,0.5,1.0)
     n = f.normal()
     assert np.all(n == np.array([0,0,1])), 'incorrect normal'
+    
+def test_cylinder():
+    cyl = cylinder(center=point3D(0.0,0.0,0.0), radius = 2.0, length=4.0, normal=np.array([0.0,0.0,1.0]))
+    assert cyl.volume()==math.pi*2.0**2.0*4.0, "incorrect cylinderical volume calc"
+    
+    test_point = point3D(0,0,0)
+    assert cyl.inside(test_point)==True, "inside calculation incorrect"
+    test_point = point3D(10,0,0)
+    assert cyl.inside(test_point)==False, "inside calculation incorrect"
+    
+    cyl = cylinder(center=point3D(0.0,0.0,0.0), radius = 0.5, length=4.0, normal=np.array([0.0,0.0,1.0]))
+    
+    test_points = []
+    for i in range(0,10000):
+        test_points.append(point3D((np.random.random(3)-0.5)*5.0))
+    
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(0,10000):
+        print cyl.inside(test_points[i]), test_points[i].values()
+        #if True:
+        if cyl.inside(test_points[i]):
+            print test_points[i].values()
+            ax.plot([test_points[i].values()[0]],[test_points[i].values()[1]],[test_points[i].values()[2]], '.')
+    ax.set_xlim([-3,3])
+    ax.set_ylim([-3,3])
+    ax.set_zlim([-3,3])
+    plt.show()
+    
+    assert True==False, 'poops'
     
     
     
