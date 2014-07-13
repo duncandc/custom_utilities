@@ -3,6 +3,7 @@ import math
 import numpy as np
 
 
+#fiddeling with a point object that has all the nice properties of numpy arrays.
 class test_point(np.ndarray):
     def __new__(self, *args):
         data = (args[0],args[1],args[2])
@@ -69,11 +70,63 @@ class point3D(object):
         
     def values(self):
         return self.x1, self.x2, self.x3
-        
+
+
+#this function works with numpy arrays
+def distance2D(point, points):
+    '''
+    Calculate the distance between two points with cartesian coordinates.
+    '''
+    if len(point) != 2: raise ValueError('first argument must be a list of 2 floats')
+    x1 = point[0]
+    y1 = point[1]
+    points = np.array(points)
+    if points.shape[0] != 2: raise ValueError('second argument must have shape (2,N)')
+    if len(points.shape) > 1:
+        x2 = points[:,0]
+        y2 = points[:,1]
+    else:
+        x2 = np.array([points[0]])
+        y2 = np.array([points[1]])
+    
+    return np.sqrt((x1-x2)**2.0+(y1-y2)**2.0)
+
+
+#this function works with numpy arrays
+def distance2D_periodic(point, points, box_size=0.0):
+    '''
+    Calculate the distance between two points with cartesian coordinates in a periodic 
+    box with a corner of the box at (0,0,0).
+    '''
+    
+    if len(point) != 2: raise ValueError('first argument must be a list of 2 floats')
+    x1 = point[0]
+    y1 = point[1]
+    points = np.array(points)
+    if points.shape[0] != 2: raise ValueError('second argument must have shape (2,N)')
+    if len(points.shape) > 1:
+        x2 = points[:,0]
+        y2 = points[:,1]
+    else:
+        x2 = np.array([points[0]])
+        y2 = np.array([points[1]])
+    
+    delta_x = np.fabs(x1 - x2)
+    wrap = (delta_x > box_size/2.0)
+    delta_x[wrap] = box_size - delta_x[wrap]
+    delta_y = np.fabs(y1 - y2)
+    wrap = (delta_y > box_size/2.0)
+    delta_y[wrap] = box_size - delta_y[wrap]
+    d = np.sqrt(delta_x ** 2.0 + delta_y ** 2.0)
+    
+    return d
 
 
 #this function works with numpy arrays
 def distance3D(point, points):
+    '''
+    Calculate the distance between two points with cartesian coordinates.
+    '''
     if len(point) != 3: raise ValueError('first argument must be a list of 3 floats')
     x1 = point[0]
     y1 = point[1]
@@ -85,15 +138,20 @@ def distance3D(point, points):
         y2 = points[:,1]
         z2 = points[:,2]
     else:
-        x2 = points[0]
-        y2 = points[1]
-        z2 = points[2]
+        x2 = np.array([points[0]])
+        y2 = np.array([points[1]])
+        z2 = np.array([points[2]])
     
     return np.sqrt((x1-x2)**2.0+(y1-y2)**2.0+(z1-z2)**2.0)
 
 
 #this function works with numpy arrays
 def distance3D_periodic(point, points, box_size=0.0):
+    '''
+    Calculate the distance between two points with cartesian coordinates in a periodic 
+    box with a corner of the box at (0,0,0).
+    '''
+    
     if len(point) != 3: raise ValueError('first argument must be a list of 3 floats')
     x1 = point[0]
     y1 = point[1]
@@ -105,9 +163,9 @@ def distance3D_periodic(point, points, box_size=0.0):
         y2 = points[:,1]
         z2 = points[:,2]
     else:
-        x2 = points[0]
-        y2 = points[1]
-        z2 = points[2]
+        x2 = np.array([points[0]])
+        y2 = np.array([points[1]])
+        z2 = np.array([points[2]])
     
     delta_x = np.fabs(x1 - x2)
     wrap = (delta_x > box_size/2.0)
@@ -124,18 +182,17 @@ def distance3D_periodic(point, points, box_size=0.0):
 
 
 class polygon2D(object):
-    def __init__(self,v=[]):
+    def __init__(self,v=[(0,0),(0,0),(0,0)]):
         self.vertices = v # list of point objects
         for vert in self.vertices:
-            if not isinstance(vert,point2D):
-                print type(vert)
-                raise ValueError('vertices must be 2D points')
+            if len(vert) != 2:
+                raise ValueError('vertices must be len==2')
     
     def area(self,positive=False):
         A = 0.0
         for i in range(0,len(self.vertices)-1):
-            A += 0.5*(self.vertices[i].x1*self.vertices[i+1].x2\
-                 -self.vertices[i+1].x1*self.vertices[i].x2)
+            A += 0.5*(self.vertices[i][0]*self.vertices[i+1][1]\
+                 -self.vertices[i+1][0]*self.vertices[i][1])
         if positive==True: return math.fabs(A)
         else: return A
         
@@ -145,20 +202,20 @@ class polygon2D(object):
         A = self.area()
         print A
         for i in range(0,len(self.vertices)-1):
-            Cx += 1.0/(6.0*A)*(self.vertices[i].x1+self.vertices[i+1].x1)\
-                 *(self.vertices[i].x1*self.vertices[i+1].x2\
-                 -self.vertices[i+1].x1*self.vertices[i].x2)
-            Cy += 1.0/(6.0*A)*(self.vertices[i].x2+self.vertices[i+1].x2)\
-                 *(self.vertices[i].x1*self.vertices[i+1].x2\
-                 -self.vertices[i+1].x1*self.vertices[i].x2)
-        return point2D(Cx,Cy)
+            Cx += 1.0/(6.0*A)*(self.vertices[i][0]+self.vertices[i+1][0])\
+                 *(self.vertices[i][0]*self.vertices[i+1][1]\
+                 -self.vertices[i+1][0]*self.vertices[i][1])
+            Cy += 1.0/(6.0*A)*(self.vertices[i][1]+self.vertices[i+1][1])\
+                 *(self.vertices[i][0]*self.vertices[i+1][1]\
+                 -self.vertices[i+1][0]*self.vertices[i][1])
+        return Cx,Cy
         
     def circum_r(self):
         d = 0.0
         for i in range(0,len(self.vertices)):
-            print self.center().distance(self.vertices[i])
-            print max(d,self.center().distance(self.vertices[i]))
-            d = max(d,self.center().distance(self.vertices[i]))
+            print distance2D(self.center(),self.vertices[i])
+            print max(d,distance2D(self.center(),self.vertices[i]))
+            d = max(d,distance2D(self.center(),self.vertices[i]))
         return d
 
 
@@ -173,17 +230,17 @@ class circle(object):
 
 
 class face(object):
-    def __init__(self,v=[point3D(0.0,0.0,0.0),point3D(0.0,0.0,0.0),point3D(0.0,0.0,0.0)]):
+    def __init__(self,v=[(0.0,0.0,0.0),(0.0,0.0,0.0),(0.0,0.0,0.0)]):
         self.vertices = v
         #check to see if vertices are co-planer
         if len(self.vertices)<3: 
             raise ValueError('not enough vertices to define face, N must be >=3')
         if len(self.vertices)>3:
-            v0 = (self.vertices[0].x1, self.vertices[0].x2, self.vertices[0].x3)
-            v1 = (self.vertices[1].x1-v0[0], self.vertices[1].x2-v0[1], self.vertices[1].x3-v0[2])
-            v2 = (self.vertices[2].x1-v0[0], self.vertices[2].x2-v0[1], self.vertices[2].x3-v0[2])
+            v0 = (self.vertices[0][0], self.vertices[0][1], self.vertices[0][2])
+            v1 = (self.vertices[1][0]-v0[0], self.vertices[1][1]-v0[1], self.vertices[1][2]-v0[2])
+            v2 = (self.vertices[2][0]-v0[0], self.vertices[2][1]-v0[1], self.vertices[2][2]-v0[2])
             for i in range(3,len(v)):
-                v3 = (self.vertices[i].x1-v0[0], self.vertices[i].x2-v0[1], self.vertices[i].x3-v0[2])
+                v3 = (self.vertices[i][0]-v0[0], self.vertices[i][1]-v0[1], self.vertices[i][2]-v0[2])
                 xprd = np.cross(v2,v3)
                 vol = np.dot(v1,xprd)
                 if vol != 0.0 :raise ValueError('vertices are not co-planer')
@@ -201,9 +258,9 @@ class face(object):
             return self.vertices[start]
             
     def area(self):
-        v0 = np.array((self.vertices[0].x1, self.vertices[0].x2, self.vertices[0].x3))
-        v1 = np.array((self.vertices[1].x1-v0[0], self.vertices[1].x2-v0[1], self.vertices[1].x3-v0[2]))
-        v2 = np.array((self.vertices[2].x1-v0[0], self.vertices[2].x2-v0[1], self.vertices[2].x3-v0[2]))
+        v0 = np.array((self.vertices[0][0], self.vertices[0][1], self.vertices[0][2]))
+        v1 = np.array((self.vertices[1][0]-v0[0], self.vertices[1][1]-v0[1], self.vertices[1][2]-v0[2]))
+        v2 = np.array((self.vertices[2][0]-v0[0], self.vertices[2][1]-v0[1], self.vertices[2][2]-v0[2]))
         v3 = np.cross(v1,v2)
         v4 = np.cross(v3,v1)
         e1 = v1/math.sqrt(v1[0]**2.0+v1[1]**2.0+v1[2]**2.0)
@@ -211,17 +268,17 @@ class face(object):
         x = np.empty(len(self.vertices))
         y = np.empty(len(self.vertices))
         for i, vertex in enumerate(self.vertices):
-            x[i] = (vertex.x1-v0[0])*e1[0]+(vertex.x2-v0[1])*e1[1]+(vertex.x3-v0[2])*e1[2]
-            y[i] = (vertex.x1-v0[0])*e2[0]+(vertex.x2-v0[1])*e2[1]+(vertex.x3-v0[2])*e2[2]
+            x[i] = (vertex[0]-v0[0])*e1[0]+(vertex[1]-v0[1])*e1[1]+(vertex[2]-v0[2])*e1[2]
+            y[i] = (vertex[0]-v0[0])*e2[0]+(vertex[1]-v0[1])*e2[1]+(vertex[2]-v0[2])*e2[2]
         A = 0.0
         for i in range(0,len(self.vertices)-1):
             A += 0.5*(x[i]*y[i+1]-x[i+1]*y[i])
         return A
         
     def center(self):
-        v0 = np.array((self.vertices[0].x1, self.vertices[0].x2, self.vertices[0].x3))
-        v1 = np.array((self.vertices[1].x1-v0[0], self.vertices[1].x2-v0[1], self.vertices[1].x3-v0[2]))
-        v2 = np.array((self.vertices[2].x1-v0[0], self.vertices[2].x2-v0[1], self.vertices[2].x3-v0[2]))
+        v0 = np.array((self.vertices[0][0], self.vertices[0][1], self.vertices[0][2]))
+        v1 = np.array((self.vertices[1][0]-v0[0], self.vertices[1][1]-v0[1], self.vertices[1][2]-v0[2]))
+        v2 = np.array((self.vertices[2][0]-v0[0], self.vertices[2][1]-v0[1], self.vertices[2][2]-v0[2]))
         v3 = np.cross(v1,v2)
         v4 = np.cross(v3,v1)
         e1 = v1/math.sqrt(v1[0]**2.0+v1[1]**2.0+v1[2]**2.0)
@@ -229,8 +286,8 @@ class face(object):
         x = np.empty(len(self.vertices))
         y = np.empty(len(self.vertices))
         for i, vertex in enumerate(self.vertices):
-            x[i] = (vertex.x1-v0[0])*e1[0]+(vertex.x2-v0[1])*e1[1]+(vertex.x3-v0[2])*e1[2]
-            y[i] = (vertex.x1-v0[0])*e2[0]+(vertex.x2-v0[1])*e2[1]+(vertex.x3-v0[2])*e2[2]
+            x[i] = (vertex[0]-v0[0])*e1[0]+(vertex[1]-v0[1])*e1[1]+(vertex[2]-v0[2])*e1[2]
+            y[i] = (vertex[0]-v0[0])*e2[0]+(vertex[1]-v0[1])*e2[1]+(vertex[2]-v0[2])*e2[2]
         Cx = 0.0
         Cy = 0.0
         A = self.area()
@@ -240,12 +297,12 @@ class face(object):
         Cxx = v0[0] + e1[0]*Cx+e2[0]*Cy
         Cyy = v0[1] + e1[1]*Cx+e2[1]*Cy
         Czz = v0[2] + e1[2]*Cx+e2[2]*Cy
-        return point3D(Cxx,Cyy,Czz)
+        return Cxx,Cyy,Czz
         
     def normal(self):
-        v0 = self.center().values()
-        v1 = (self.vertices[1].x1-v0[0], self.vertices[1].x2-v0[1], self.vertices[1].x3-v0[2])
-        v2 = (self.vertices[2].x1-v0[0], self.vertices[2].x2-v0[1], self.vertices[2].x3-v0[2])
+        v0 = self.center()
+        v1 = (self.vertices[1][0]-v0[0], self.vertices[1][1]-v0[1], self.vertices[1][2]-v0[2])
+        v2 = (self.vertices[2][0]-v0[0], self.vertices[2][1]-v0[1], self.vertices[2][2]-v0[2])
         n = np.cross(v1,v2)
         n = n/(math.sqrt(n[0]**2.0+n[1]**2.0+n[2]**2.0))
         return n
@@ -254,32 +311,35 @@ class face(object):
 class polygon3D(object):
     def __init__(self,f=[]):
         self.faces = f # list of point objects
-        unq_verts = list({vert.values() for sublist in self.faces for vert in sublist})
-        self.vertices = [point3D(unq_verts[i][0],unq_verts[i][1],unq_verts[i][2])\
+        unq_verts = list({vert for sublist in self.faces for vert in sublist})
+        self.vertices = [(unq_verts[i][0],unq_verts[i][1],unq_verts[i][2])\
                          for i in range(len(unq_verts))] 
         for f in self.faces:
             print type(f)
             if not isinstance(f,face):
                 print type(f)
-                raise ValueError('faces must be of type face')
+                raise ValueError('arguments must be of type face')
                 
     def volume(self):
         vol = 0.0
         for f in self.faces: # the faces
             n = len(f.vertices)
             v2 = f.vertices[0] # the pivot of the fan
-            x2 = v2.x1
-            y2 = v2.x2
-            z2 = v2.x3
+            #x2 = v2.x1
+            #y2 = v2.x2
+            #z2 = v2.x3
+            x2,y2,z2 = v2
             for i in range(1,n-1): # divide into triangular fan segments
                 v0 = f.vertices[i]
-                x0 = v0.x1
-                y0 = v0.x2
-                z0 = v0.x3
+                #x0 = v0.x1
+                #y0 = v0.x2
+                #z0 = v0.x3
+                x0,y0,z0 = v0
                 v1 = f.vertices[i+1]
-                x1 = v1.x1
-                y1 = v1.x2
-                z1 = v1.x3
+                #x1 = v1.x1
+                #y1 = v1.x2
+                #z1 = v1.x3
+                x1,y1,z1 = v1
                 # Add volume of tetrahedron formed by triangle and origin
                 vol += math.fabs(x0 * y1 * z2 + x1 * y2 * z0 \
                                  + x2 * y0 * z1 - x0 * y2 * z1 \
@@ -291,7 +351,7 @@ class polygon3D(object):
 
 
 class sphere(object):
-    def __init__(self,center=point3D(0.0,0.0,0.0), r=0.0):
+    def __init__(self,center=(0.0,0.0,0.0), r=0.0):
         self.center = center
         self.radius = r
     
@@ -300,7 +360,7 @@ class sphere(object):
 
 
 class cylinder(object):
-    def __init__(self, center=point3D(0.0,0.0,0.0), radius = 1.0, length=1.0, \
+    def __init__(self, center=(0.0,0.0,0.0), radius = 1.0, length=1.0, \
                  normal=np.array([0.0,0.0,1.0])):
         self.center = center
         self.normal = normal
@@ -317,7 +377,7 @@ class cylinder(object):
         r = math.sqrt(self.radius**2.0+(self.length/2.0)**2.0)
         return r
     
-    def inside(self,points=[point3D(0.0,0.0,0.0)]):
+    def inside(self,points=(0,0,0)):
         '''
         Calculate whether a point is inside or outside the volume.
         Parameters
@@ -327,14 +387,19 @@ class cylinder(object):
             True: point is inside the volume
             False: point is outside the volume
         '''
-        #x=point3D.x1
-        #y=point3D.x2
-        #z=point3D.x3
-        x = [point.x1 for point in points]
-        y = [point.x2 for point in points]
-        z = [point.x3 for point in points]
+        points = np.array(points)
+        if len(points.shape) > 1:
+            if points.shape[1] != 3: raise ValueError('argument must have shape (3,N)')
+            x = points[:,0]
+            y = points[:,1]
+            z = points[:,2]
+        else:
+            if points.shape[0] != 3: raise ValueError('argument must have shape (3,N)')
+            x = points[0]
+            y = points[1]
+            z = points[2]
         #define coordinate origin
-        x0,y0,z0 = np.array(self.center.values())
+        x0,y0,z0 = np.array(self.center)
         #recenter on origin
         x = x-x0
         y = y-y0
