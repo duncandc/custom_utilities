@@ -3,6 +3,19 @@ import math
 import numpy as np
 
 
+class test_point(np.ndarray):
+    def __new__(self, *args):
+        data = (args[0],args[1],args[2])
+        arr = np.array(data, dtype=np.float, copy=True)
+        self.x1 = np.float(args[0])
+        self.x2 = np.float(args[1])
+        self.x3 = np.float(args[2])
+        return np.ndarray.__new__(self, shape=(3,), buffer=arr)
+        
+    def __array_wrap__(self, out_arr):
+        return np.ndarray.__array_wrap__(self, out_arr)
+
+
 class point2D(object):
     def __init__(self, x=0.0, y=0.0):
         self.x1 = x
@@ -56,6 +69,58 @@ class point3D(object):
         
     def values(self):
         return self.x1, self.x2, self.x3
+        
+
+
+#this function works with numpy arrays
+def distance3D(point, points):
+    if len(point) != 3: raise ValueError('first argument must be a list of 3 floats')
+    x1 = point[0]
+    y1 = point[1]
+    z1 = point[2]
+    points = np.array(points)
+    if points.shape[0] != 3: raise ValueError('second argument must have shape (3,N)')
+    if len(points.shape) > 1:
+        x2 = points[:,0]
+        y2 = points[:,1]
+        z2 = points[:,2]
+    else:
+        x2 = points[0]
+        y2 = points[1]
+        z2 = points[2]
+    
+    return np.sqrt((x1-x2)**2.0+(y1-y2)**2.0+(z1-z2)**2.0)
+
+
+#this function works with numpy arrays
+def distance3D_periodic(point, points, box_size=0.0):
+    if len(point) != 3: raise ValueError('first argument must be a list of 3 floats')
+    x1 = point[0]
+    y1 = point[1]
+    z1 = point[2]
+    points = np.array(points)
+    if points.shape[0] != 3: raise ValueError('second argument must have shape (3,N)')
+    if len(points.shape) > 1:
+        x2 = points[:,0]
+        y2 = points[:,1]
+        z2 = points[:,2]
+    else:
+        x2 = points[0]
+        y2 = points[1]
+        z2 = points[2]
+    
+    delta_x = np.fabs(x1 - x2)
+    wrap = (delta_x > box_size/2.0)
+    delta_x[wrap] = box_size - delta_x[wrap]
+    delta_y = np.fabs(y1 - y2)
+    wrap = (delta_y > box_size/2.0)
+    delta_y[wrap] = box_size - delta_y[wrap]
+    delta_z = np.fabs(z1 - z2)
+    wrap = (delta_z > box_size/2.0)
+    delta_z[wrap] = box_size - delta_z[wrap]
+    d = np.sqrt(delta_x ** 2.0 + delta_y ** 2.0 + delta_z ** 2.0)
+    
+    return d
 
 
 class polygon2D(object):
@@ -220,6 +285,9 @@ class polygon3D(object):
                                  + x2 * y0 * z1 - x0 * y2 * z1 \
                                  - x1 * y0 * z2 - x2 * y1 * z0)
         return vol/6.0
+        
+        def inside(self,point3D):
+            pass
 
 
 class sphere(object):
@@ -246,10 +314,10 @@ class cylinder(object):
         '''
         radius to circumscribe the volume given the center
         '''
-        r = math.sqrt(radius**2.0+(length/2.0)**2.0)
+        r = math.sqrt(self.radius**2.0+(self.length/2.0)**2.0)
         return r
     
-    def inside(self,point3D=point3D(0.0,0.0,0.0)):
+    def inside(self,points=[point3D(0.0,0.0,0.0)]):
         '''
         Calculate whether a point is inside or outside the volume.
         Parameters
@@ -259,9 +327,12 @@ class cylinder(object):
             True: point is inside the volume
             False: point is outside the volume
         '''
-        x=point3D.x1
-        y=point3D.x2
-        z=point3D.x3
+        #x=point3D.x1
+        #y=point3D.x2
+        #z=point3D.x3
+        x = [point.x1 for point in points]
+        y = [point.x2 for point in points]
+        z = [point.x3 for point in points]
         #define coordinate origin
         x0,y0,z0 = np.array(self.center.values())
         #recenter on origin
@@ -296,9 +367,8 @@ class cylinder(object):
         L_proj = np.fabs(xp)
         R_proj = np.sqrt(yp**2.0+zp**2.0)
         
-        if L_proj>self.length/2.0: return False
-        if R_proj>self.radius: return False
+        result = (L_proj<self.length/2.0) & (R_proj<self.radius)
         
-        return True
+        return result
 
 
