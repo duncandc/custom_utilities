@@ -377,7 +377,7 @@ class cylinder(object):
         r = math.sqrt(self.radius**2.0+(self.length/2.0)**2.0)
         return r
     
-    def inside(self,points=(0,0,0)):
+    def inside(self,points=(0,0,0), period=None):
         '''
         Calculate whether a point is inside or outside the volume.
         Parameters
@@ -398,6 +398,13 @@ class cylinder(object):
             x = points[0]
             y = points[1]
             z = points[2]
+        #process the period parameter
+        if period is None:
+            period = np.array([np.inf]*3)
+        else:
+            period = np.asarray(period).astype("float64")
+        if period.shape[0]!=3: raise ValueError('period must have shape (3,)')
+        
         #define coordinate origin
         x0,y0,z0 = np.array(self.center)
         #recenter on origin
