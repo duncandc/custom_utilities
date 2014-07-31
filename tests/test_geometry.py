@@ -94,6 +94,18 @@ def test_cylinder():
     test_point = (10,0,0)
     assert cyl.inside(test_point)==False, "inside calculation incorrect"
     
+def test_cylinder_periodic():
+    cyl = cylinder(center=(0.9,0.5,0.5), radius = 0.2, length=0.3, normal=np.array([0.0,1.0,0.0]))
+    
+    period=np.array([1.0,1.0,1.0])
+    
+    test_point = (0.95,0.5,0.5)
+    assert cyl.inside(test_point, period=period)==True, "inside calculation incorrect"
+    test_point = (0.05,0.5,0.5)
+    assert np.all(cyl.inside(test_point, period=period)==True), "inside calculation incorrect"
+    test_point = (0.2,0.5,0.5)
+    assert np.all(cyl.inside(test_point, period=period)==False), "inside calculation incorrect"
+    
     
     
     
