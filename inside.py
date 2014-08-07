@@ -95,7 +95,7 @@ def inside(x,y,poly):
     poly = np.array(poly, copy=True)
 
     n = len(poly)
-    inside = np.array([False]*len(x))
+    inside = np.array([False]*x.shape[0])
 
     p1x,p1y = poly[0]
     for i in range(n+1):

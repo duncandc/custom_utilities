@@ -7,7 +7,8 @@
 
 from __future__ import division
 import numpy as np
-from scipy.spatial import cKDTree
+#from scipy.spatial import cKDTree
+from HAS.TPCF.kdtrees.ckdtree import cKDTree
 import geometry
 
 def main():
@@ -15,8 +16,8 @@ def main():
     from mpl_toolkits.mplot3d import Axes3D
     import time
     
-    cyl = geometry.cylinder(center=(45,45,45), radius = .5, length=1, normal=np.array([45.0,45.0,45.0]))
-    
+    cyl = geometry.cylinder(center=(98,98,98), radius = 1, length=10, normal=np.array([45.0,45.0,45.0]))
+    period=np.array([100.0,100.0,100.0])
     N_points = 10000000
     
     test_points = np.random.random((N_points,3))*100.0
@@ -30,7 +31,7 @@ def main():
     print x.shape
     
     start = time.time()
-    inside = inside_volume(cyl,test_points)
+    inside = inside_volume(cyl,test_points, period=period)
     print time.time()-start
     
     x_inside = x[inside]
@@ -46,14 +47,14 @@ def main():
     plt.show()
 
 
-def inside_volume(shape, points):
+def inside_volume(shape, points, period=None):
     
     points = np.array(points)
     KDT = cKDTree(points)
     
-    points_to_test = np.array(KDT.query_ball_point(shape.center,shape.circum_r()))
+    points_to_test = np.array(KDT.query_ball_point(shape.center,shape.circum_r(),period=period))
     print points_to_test
-    inside = shape.inside(points[points_to_test])
+    inside = shape.inside(points[points_to_test], period)
     inside = points_to_test[inside]
     
     return inside

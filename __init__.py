@@ -1,4 +1,3 @@
-
 __all__ = ["match","inside","spherematch","sample_ra_dec_box","sample_spherical_cap"]
 
 from match import match
