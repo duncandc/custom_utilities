@@ -15,57 +15,61 @@ def main():
     from mpl_toolkits.mplot3d import Axes3D
     import time
     
-    cyl = geometry.cylinder(center=(50,95,50), radius = 3, length=20, normal=np.array([0,1,0]))
+    #define period of box
     period=np.array([100.0,100.0,100.0])
-    N_points = 10000000
     
+    #make some cylinder objects
     cyls = []
-    for i in range(0,10):
+    for i in range(0,1000):
         cp = np.random.random(3)*100.0
-        cyl = geometry.cylinder(center=(cp[0],cp[1],cp[2]), radius = 3, length=20, normal=np.array([0,1,0]))
+        cyl = geometry.cylinder(center=(cp[0],cp[1],cp[2]), radius = 1, length=2.5, normal=np.array([cp[0],cp[1],cp[2]]))
         cyls.append(cyl)
     
+    #make some test points
+    N_points = 10000000
     test_points = np.random.random((N_points,3))*100.0
-    
     x = test_points[:,0]
     y = test_points[:,1]
     z = test_points[:,2]
     
+    #create kdtree for points
     start = time.time()
     tree = cKDTree(test_points)
     print("create kdtree time (s): {0}".format(time.time()-start))
     
+    #check points against cylinder objects
     start = time.time()
-    inside = inside_volume(cyls,tree, period=period)
-    #inside = inside_volume(cyl,test_points, period=period)
+    inside_points, inside_shapes = inside_volume(cyls,tree, period=period)
     print("check points time (s): {0}".format(time.time()-start))
     
-    print(inside)
+    x_inside = x[inside_points]
+    y_inside = y[inside_points]
+    z_inside = z[inside_points]
     
-    x_inside = x[inside]
-    y_inside = y[inside]
-    z_inside = z[inside]
-    
-    
+    '''
+    #plot the points which fall within the cylinders
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot(x_inside,y_inside,z_inside,'.', color='blue', ms=2)
-    ax.plot([cyl.center[0]],[cyl.center[1]],[cyl.center[2]],'x',color='red', ms=10)
     ax.set_xlim([0,100])
     ax.set_ylim([0,100])
     ax.set_zlim([0,100])
     plt.show()
+    '''
     
 
 def inside_volume(shapes, points, period=None):
     '''
     Check if a list of points is inside a volume.
     parameters
-        shape: a geometry.py shape object
+        shape: a geometry.py shape object, or list of objects
         points: a list of points or a ckdtree object
         period: length k array defining axis aligned PBCs. If set to none, PBCs = infinity.
     returns
-        True or False if point is inside the volume defined by the shape.
+        inside_points: np.array of ints of indices of points which fall within the 
+            specified volumes
+        inside_shapes: np.array of booleans, True if any points fall within the shape, 
+            False otherwise
     '''
     
     if type(points) is not cKDTree:
@@ -74,9 +78,11 @@ def inside_volume(shapes, points, period=None):
     else:
         KDT=points
     
+    #if shapes is a list of shapes
     if type(shapes) is list:
-        result=np.empty((0), dtype=np.int)
-        for shape in shapes:
+        inside_points=np.empty((0,), dtype=np.int)
+        inside_shapes=np.empty((len(shapes),), dtype=bool)
+        for i, shape in enumerate(shapes):
             points_to_test = np.array(KDT.query_ball_point(shape.center,shape.circum_r(),period=period))
     
             if type(points) is cKDTree:
@@ -85,11 +91,13 @@ def inside_volume(shapes, points, period=None):
             else:
                 inside = shape.inside(points[points_to_test], period)
                 inside = points_to_test[inside]
-            
-            result = np.hstack((result,inside))
-        print(result)
-        return result
-    else:
+            if len(inside)>0:
+                inside_shapes[i]=True
+            else: inside_shapes[i]=False
+            inside_points = np.hstack((inside_points,inside))
+        inside_points = np.unique(inside_points)
+        return inside_points, inside_shapes
+    else: #if shapes is a single shape object
         shape = shapes
         points_to_test = np.array(KDT.query_ball_point(shape.center,shape.circum_r(),period=period))
     
@@ -99,8 +107,11 @@ def inside_volume(shapes, points, period=None):
         else:
             inside = shape.inside(points[points_to_test], period)
             inside = points_to_test[inside]
-    
-        return inside
+        
+        if len(inside)>0: inside_shapes = True
+        else:  inside_shapes = False
+        inside_points = inside
+        return inside_points, inside_shapes
 
 
 if __name__ == '__main__':
