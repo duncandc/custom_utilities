@@ -457,7 +457,7 @@ class cylinder(object):
             for reflection in reflections:
                 #define coordinate origin
                 x0,y0,z0 = reflection+np.array(self.center)
-                print x0,y0,z0
+                #print reflection, x0,y0,z0
                 #recenter on origin
                 xp = x-x0
                 yp = y-y0
