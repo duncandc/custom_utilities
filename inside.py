@@ -87,12 +87,22 @@ def inside(x,y,poly):
     True if inside the polygon
     False if outside the polygon
     '''
-
     import numpy as np
 
-    x = np.array(x, copy=True)
-    y = np.array(y, copy=True)
+    #check to see is input is a point not in the form of a list of vector
+    if (type(x) is float) | (type(x) is int):
+        x = np.array([x], copy=True)
+        y = np.array([y], copy=True)
+    else:
+        x = np.array(x, copy=True)
+        y = np.array(y, copy=True)
     poly = np.array(poly, copy=True)
+
+    #check to see if input is consistent
+    if x.shape[0]!=y.shape[0]:
+        raise ValueError("x and y must have the same length")
+    if len(poly)<3:
+        raise ValueError("a polygon must be defined by >= 3 points.")
 
     n = len(poly)
     inside = np.array([False]*x.shape[0])
