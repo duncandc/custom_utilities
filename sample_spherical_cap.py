@@ -10,8 +10,11 @@ from __future__ import division
 import numpy as np
 
 def main():
-    #example code calling sample_spherical_cap() to give random ra,dec points in a specified 
-    #region
+    '''
+    Example script calling sample_spherical_cap() function to give random ra,dec points in
+    a specified region.
+    ''''
+    
     import matplotlib.pyplot as plt
     #define region, e.g. roughly the W3 CFHTLS field
     ra = 215.0
