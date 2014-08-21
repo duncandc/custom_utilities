@@ -32,17 +32,29 @@ def main():
 
 def sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N_points):
     '''
-    randomly sample a spherical region bounded by ra_min, ra_max, dec_min, dec_max
+    Randomly sample a spherical region bounded by ra_min, ra_max, dec_min, dec_max
     
-    parameters
-    ra_min: minimum angular coordinate in degrees
-    dec_min: minimum angular coordinate in degrees
-    ra_max: minimum angular coordinate in degrees
-    dec_max: minimum angular coordinate in degrees
-    N_points: number of points to return in region
+    Parameters 
+    ----------
+    ra_min: float
+        minimum angular coordinate in degrees
+        
+    dec_min: float
+        minimum angular coordinate in degrees
+        
+    ra_max: float
+        minimum angular coordinate in degrees
+        
+    dec_max: float
+        minimum angular coordinate in degrees
+        
+    N_points: int
+        number of points to return in region
     
-    returns
-    coords: list of N_pints (ra,dec) coordinate pairs in region
+    Returns 
+    ----------
+    coords: list
+        N_pints (ra,dec) coordinate pairs in region
     '''
 
     from numpy import random
@@ -56,8 +68,8 @@ def sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N_points):
 
     ra_max = ra_max / (2.0* pi) #map onto (0,1)
     ra_min = ra_min / (2.0* pi) #map onto (0,1)
-    dec_max = (cos(dec_max + 0.5) + 1.0) / 2.0 #map onto (0,1)
-    dec_min = (cos(dec_min + 0.5) + 1.0) / 2.0 #map onto (0,1)
+    dec_max = (cos(dec_max + 0.5*pi) + 1.0) / 2.0 #map onto (0,1)
+    dec_min = (cos(dec_min + 0.5*pi) + 1.0) / 2.0 #map onto (0,1)
 
     ran1 = random.rand(N_points)
     ran2 = random.rand(N_points)
@@ -66,7 +78,7 @@ def sample_ra_dec_box(ra_min, ra_max, dec_min, dec_max, N_points):
     ran1 = ran1 * 2.0 * pi #convert to radians
 
     ran2 = ran2 * (dec_max - dec_min) + dec_min #scale so it falls in field
-    ran2 = np.arccos(2.0 * ran2 - 1.0) - 0.5 #convert to radians
+    ran2 = np.arccos(2.0 * ran2 - 1.0) - 0.5*pi #convert to radians
 
     ran_ra = ran1 * 360.0 / (2.0 * pi) #convert to degrees 
     ran_dec = ran2 * 360.0 / (2.0 * pi) #convert to degrees
