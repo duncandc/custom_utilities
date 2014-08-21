@@ -20,12 +20,12 @@ def main():
     N=1000
     
     sample = sample_spherical_cap(ra,dec,da,N)
-    
+    print sample
     ra,dec = zip(*sample)
     
     plt.plot(ra,dec,'.',color='blue')
-    plt.xlim([205,225])
-    plt.ylim([50,60])
+    #plt.xlim([205,225])
+    #plt.ylim([50,60])
     plt.show()
     
 
@@ -54,8 +54,10 @@ def sample_spherical_cap(ra, dec, da, N_points):
 
     ra_max = ra_max / (2.0* pi) #map onto (0,1)
     ra_min = ra_min / (2.0* pi) #map onto (0,1)
-    dec_max = (cos(dec_max + 0.5) + 1.0) / 2.0 #map onto (0,1)
-    dec_min = (cos(dec_min + 0.5) + 1.0) / 2.0 #map onto (0,1)
+    dec_max = (cos(dec_max + 0.5 * pi) + 1.0) / 2.0 #map onto (0,1)
+    dec_min = (cos(dec_min + 0.5 * pi) + 1.0) / 2.0 #map onto (0,1)
+    print dec_min, dec_max
+    print ra_min, ra_max
 
     ran1 = random.rand(N_points * 3.0) #oversample, to account for box sample  
     ran2 = random.rand(N_points * 3.0) #oversample, to account for box sample
@@ -64,7 +66,7 @@ def sample_spherical_cap(ra, dec, da, N_points):
     ran1 = ran1 * 2.0 * pi #convert to radians
 
     ran2 = ran2 * (dec_max - dec_min) + dec_min #scale so it falls in field
-    ran2 = np.arccos(2.0 * ran2 - 1.0) - 0.5 #convert to radians
+    ran2 = np.arccos(2.0 * ran2 - 1.0) - 0.5*pi #convert to radians
 
     ran1 = ran1 * 360.0 / (2.0 * pi) #convert to degrees 
     ran2 = ran2 * 360.0 / (2.0 * pi) #convert to degrees
