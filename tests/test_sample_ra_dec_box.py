@@ -3,7 +3,7 @@
 from ..sample_ra_dec_box import sample_ra_dec_box
 import numpy as np
 
-def test_match_one_to_one():
+def test_sample_ra_dec_box():
     #define region, e.g. roughly the W3 CFHTLS field
     ra_min, ra_max = (209.0,220.0)
     dec_min, dec_max = (51.0,58.0)
