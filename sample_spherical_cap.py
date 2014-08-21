@@ -13,7 +13,7 @@ def main():
     '''
     Example script calling sample_spherical_cap() function to give random ra,dec points in
     a specified region.
-    ''''
+    '''
     
     import matplotlib.pyplot as plt
     #define region, e.g. roughly the W3 CFHTLS field
@@ -23,12 +23,14 @@ def main():
     N=1000
     
     sample = sample_spherical_cap(ra,dec,da,N)
-    print type(sample)
+    
     ra,dec = zip(*sample)
     
     plt.plot(ra,dec,'.',color='blue')
-    #plt.xlim([205,225])
-    #plt.ylim([50,60])
+    plt.xlim([205,225])
+    plt.ylim([50,60])
+    plt.xlabel('RA')
+    plt.ylabel('DEC')
     plt.show()
     
 
