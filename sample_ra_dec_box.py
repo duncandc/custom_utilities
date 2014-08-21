@@ -10,8 +10,11 @@ from __future__ import division
 import numpy as np
 
 def main():
-    #example code calling sample_ra_dec_box() to give random ra,dec points in a specified 
-    #region
+    '''
+    example code calling sample_ra_dec_box() to give random ra,dec points in a specified 
+    region
+    '''
+    
     import matplotlib.pyplot as plt
     #define region, e.g. roughly the W3 CFHTLS field
     ra_min, ra_max = (209.0,220.0)
