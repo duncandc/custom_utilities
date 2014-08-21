@@ -20,7 +20,7 @@ def main():
     N=1000
     
     sample = sample_spherical_cap(ra,dec,da,N)
-    print sample
+    print type(sample)
     ra,dec = zip(*sample)
     
     plt.plot(ra,dec,'.',color='blue')
@@ -31,16 +31,22 @@ def main():
 
 def sample_spherical_cap(ra, dec, da, N_points):
     '''
-    randomly sample a spherical cap
+    Randomly sample a spherical cap region of the sky.
     
-    parameters
-    ra: angular coordinate to center on
-    dec: angular coordinate to center on
-    da: angular radius of spherical cap
-    N_points: number of points to sample cap
+    Parameters 
+    ----------
+    ra: array_like
+        right ascension angular coordinate of center in degrees
+    dec: array_like
+        declination angular coordinate of center in degrees
+    da: float
+        angular radius of spherical cap
+    N_points: number of points to sample on cap.
     
-    returns
-    coords: list of N_pints (ra,dec) coordinate pairs in spherical cap region
+    Returns 
+    ----------
+    coords: list 
+        (ra,dec) coordinate pairs in spherical cap region.
     '''
 
     from numpy import random
