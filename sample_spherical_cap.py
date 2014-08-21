@@ -42,11 +42,15 @@ def sample_spherical_cap(ra, dec, da, N_points):
     ----------
     ra: array_like
         right ascension angular coordinate of center in degrees
+        
     dec: array_like
         declination angular coordinate of center in degrees
+        
     da: float
         angular radius of spherical cap
-    N_points: number of points to sample on cap.
+        
+    N_points: int
+        number of points to sample on cap.
     
     Returns 
     ----------
