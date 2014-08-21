@@ -3,7 +3,7 @@
 from ..inside import inside
 import numpy as np
 
-def test_match_one_to_one():
+def test_inside_square():
     #define square
     square = [(-1,-1),(-1,1),(1,1),(1,-1)]
     
