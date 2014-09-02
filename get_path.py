@@ -1,16 +1,34 @@
-def get_data_path():
+#!/usr/bin/env python
 
+#Duncan Campbell
+#September 2, 2012
+#Yale University
+#Setup file paths for common systems I work on.
+
+__all__=['get_data_path','get_output_path','get_plot_path']
+
+def get_system():
     import platform
     node = platform.node()
+    
+    node = node.split('.')[0]
+    
+    return node
 
-    if node=='donuts.astro.yale.edu':
+def get_data_path():
+
+    node = get_system()
+
+    if node=='donuts':
         path = '/scratch/dac29/data/'
-    elif node=='login-0-0.local':
+    elif node=='donut-hole':
+        path = '/Users/duncan/Documents/projects/data/'
+    elif node=='rgot':
+        path = '/scratch/dac29/data/'
+    elif node=='esca':
+        path = '/scratch/dac29/data/'
+    elif node=='login-0-0':
         path = '/home/fas/padmanabhan/dac29/scratch/data/'
-    elif node=='rgot.astro.yale.edu':
-        path = '/scratch/dac29/data/'
-    elif node=='esca.astro.yale.edu':
-        path = '/scratch/dac29/data/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
@@ -18,36 +36,38 @@ def get_data_path():
 
 def get_output_path():
 
-    import platform
-    node = platform.node()
+    node = get_system()
 
-    if node=='donuts.astro.yale.edu':
+    if node=='donuts':
         path = '/scratch/dac29/output/'
-    elif node=='login-0-0.local':
+    elif node=='donut-hole':
+        path = '/Users/duncan/Documents/projects/output/'
+    elif node=='rgot':
+        path = '/scratch/dac29/output/'
+    elif node=='esca':
+        path = '/scratch/dac29/output/'
+    elif node=='login-0-0':
         path = '/home/fas/padmanabhan/dac29/scratch/output/'
-    elif node=='rgot.astro.yale.edu':
-        path = '/scratch/dac29/output/'
-    elif node=='esca.astro.yale.edu':
-        path = '/scratch/dac29/output/'
     else:
-        return 'error: unknown output directory for this enviorment!'
+        return 'error: unknown data directory for this enviorment!'
 
     return path
 
 def get_plot_path():
 
-    import platform
-    node = platform.node()
+    node = get_system()
 
-    if node=='donuts.astro.yale.edu':
+    if node=='donuts':
         path = '/scratch/dac29/plots/'
-    elif node=='login-0-0.local':
-        path = '/home/fas/padmanabhan/dac29/scratch/output/'
-    elif node=='rgot.astro.yale.edu':
+    if node=='donut-hole':
+        path = '/Users/duncan/Documents/projects/plots/'
+    elif node=='rgot':
         path = '/scratch/dac29/plots/'
-    elif node=='esca.astro.yale.edu':
+    elif node=='esca':
         path = '/scratch/dac29/plots/'
+    elif node=='login-0-0':
+        path = '/home/fas/padmanabhan/dac29/scratch/plots/'
     else:
-        return 'error: unknown output directory for this enviorment!'
+        return 'error: unknown data directory for this enviorment!'
 
     return path
