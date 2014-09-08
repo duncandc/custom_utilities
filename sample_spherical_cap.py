@@ -71,8 +71,6 @@ def sample_spherical_cap(ra, dec, da, N_points):
     ra_min = ra_min / (2.0* pi) #map onto (0,1)
     dec_max = (cos(dec_max + 0.5 * pi) + 1.0) / 2.0 #map onto (0,1)
     dec_min = (cos(dec_min + 0.5 * pi) + 1.0) / 2.0 #map onto (0,1)
-    print dec_min, dec_max
-    print ra_min, ra_max
 
     ran1 = random.rand(N_points * 3.0) #oversample, to account for box sample  
     ran2 = random.rand(N_points * 3.0) #oversample, to account for box sample
