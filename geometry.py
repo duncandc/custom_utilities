@@ -1,76 +1,11 @@
+#Duncan Campbell
+#August 22, 2014
+#Yale University
+#This code includes geometric objects and methods to work on those objects.
+
 from __future__ import division
 import math
 import numpy as np
-
-
-#fiddeling with a point object that has all the nice properties of numpy arrays.
-class test_point(np.ndarray):
-    def __new__(self, *args):
-        data = (args[0],args[1],args[2])
-        arr = np.array(data, dtype=np.float, copy=True)
-        self.x1 = np.float(args[0])
-        self.x2 = np.float(args[1])
-        self.x3 = np.float(args[2])
-        return np.ndarray.__new__(self, shape=(3,), buffer=arr)
-        
-    def __array_wrap__(self, out_arr):
-        return np.ndarray.__array_wrap__(self, out_arr)
-
-
-class point2D(object):
-    def __init__(self, x=0.0, y=0.0):
-        self.x1 = x
-        self.x2 = y
-
-    def distance(self,point2D):
-        return math.sqrt((self.x1-point2D.x1)**2.0+(self.x2-point2D.x2)**2.0)
-        
-    def distance_periodic(self, point2D, box_size=0.0):
-        if not isinstance(point2D,type(self)): 
-            print type(point2D)
-            raise ValueError('must be given 2D point')
-        delta_x = math.fabs(self.x1 - point2D.x1)
-        if delta_x > box_size/2.0: delta_x = box_size - delta_x
-        delta_y = math.fabs(self.x2 - point2D.x2)
-        if delta_y > box_size/2.0: delta_y = box_size - delta_y
-        d = math.sqrt(delta_x ** 2.0 + delta_y ** 2.0)
-        return d
-        
-    def values(self):
-        return self.x1, self.x2
-
-
-class point3D(object):
-    def __init__(self, x=0.0, y=0.0, z=0.0):
-        if type(x) is np.ndarray:
-            self.x1 = x[0]
-            self.x2 = x[1]
-            self.x3 = x[2]
-        else:
-            self.x1 = x
-            self.x2 = y
-            self.x3 = z
-        
-    def distance(self,point3D):
-        return math.sqrt((self.x1-point3D.x1)**2.0+(self.x2-point3D.x2)**2.0\
-        +(self.x3-point3D.x3)**2.0)
-        
-    def distance_periodic(self, point3D, box_size=0.0):
-        if not isinstance(point3D,type(self)): 
-            print type(point3D)
-            raise ValueError('must be given 3D point')
-        delta_x = math.fabs(self.x1 - point3D.x1)
-        if delta_x > box_size/2.0: delta_x = box_size - delta_x
-        delta_y = math.fabs(self.x2 - point3D.x2)
-        if delta_y > box_size/2.0: delta_y = box_size - delta_y
-        delta_z = math.fabs(self.x3 - point3D.x3)
-        if delta_z > box_size/2.0: delta_z = box_size - delta_z
-        d = math.sqrt(delta_x ** 2.0 + delta_y ** 2.0 + delta_z ** 2.0)
-        return d
-        
-    def values(self):
-        return self.x1, self.x2, self.x3
-
 
 #this function works with numpy arrays
 def distance2D(point, points):
@@ -220,8 +155,8 @@ class polygon2D(object):
 
 
 class circle(object):
-    def __init__(self,center=point2D(0.0,0.0), r=0.0):
-        self.center = center
+    def __init__(self,center=[0.0,0.0], r=0.0):
+        self.center = np.array(center)
         self.radius = r
     
     def area(self):
