@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from ..geometry import point3D, face, polygon3D, sphere, point2D, polygon2D, circle
+from ..geometry import face, polygon3D, sphere, polygon2D, circle
 from ..geometry import cylinder, distance3D, distance2D, distance3D_periodic
 from ..geometry import distance2D_periodic
 import numpy as np
@@ -54,23 +54,6 @@ def test_sphere():
     s = sphere(center,radius)
     assert s.volume() == (4.0/3.0)*math.pi, "volume of r=1 sphere calculation wrong"
     assert s.radius == 1.0, "radius of r=1 sphere wrong"
-    
-def test_distance2D():
-    p1 = (0,0)
-    p2 = (0,1)
-    dist = distance2D(p1,p2)
-    assert dist==1.0, "distance calc incorrect"
-    dist = distance2D_periodic(p1,p2,1.5)
-    assert dist==0.5
-    
-    
-def test_distance3D():
-    p1 = (0,0,0)
-    p2 = (0,1,0)
-    dist = distance3D(p1,p2)
-    assert dist==1.0, "distance calc incorrect"
-    dist = distance3D_periodic(p1,p2,1.5)
-    assert dist==0.5
     
 def test_face():
     v1 = (0,0,1)
