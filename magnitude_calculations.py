@@ -8,7 +8,7 @@ Functions that compute quantities dealing with magnitudes.
 
 from __future__ import division
 
-__all__=['apparent_to_absolute_magnitude','luminosity_to_absolute_magnitude','absolute_magnitude_to_luminosity','get_sun_mag']
+__all__=['apparent_to_absolute_magnitude','luminosity_to_absolute_magnitude','absolute_magnitude_to_luminosity','absolute_magnitude_lim','get_sun_mag']
 
 import numpy as np
 
