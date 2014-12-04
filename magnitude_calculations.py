@@ -98,31 +98,28 @@ def absolute_magnitude_lim(z, app_mag_lim, cosmo=None):
     
     Parameters
     ----------
-    M: array_like
-        absolute magnitude
+    z: array_like
+        redshift
     
-    band: string
-       filter band
+    app_mag_lim: float
+       apparent magnitude limit
     
-    system: string, optional
-        filter systems: default is 'SDSS_Blanton_2003_z0.1'
-          1. Binney_and_Merrifield_1998
-          2. SDSS_Blanton_2003_z0.1
+    cosmo: cosmology object
     
     Returns
     -------
     M,z: np.array, np.array
-        absolute magnitude, redshift
+        absolute magnitude in mag+5loh(h) units
     """
     if cosmo==None:
         from astropy.cosmology import FlatLambdaCDM
         cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
         print('Warning, no cosmology specified, using default:',cosmo)
     
-    d_L = cosmo.luminosity_distance(z)
+    d_L = cosmo.luminosity_distance(z).value
     M = apparent_to_absolute_magnitude(app_mag_lim, d_L)
     
-    return M
+    return M-5.0*np.log10(cosmo.h)
 
 def get_sun_mag(filter,system):
     """
