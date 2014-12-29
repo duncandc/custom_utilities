@@ -8,6 +8,7 @@
 
 from __future__ import division
 import numpy as np
+import math
 
 def main():
     '''
@@ -16,25 +17,23 @@ def main():
     '''
     
     import matplotlib.pyplot as plt
-    #define region, e.g. roughly the W3 CFHTLS field
-    ra = 215.0
-    dec = 55.0
-    da = 4.0
-    N=1000
+    N=10000
     
-    sample = sample_spherical_cap(ra,dec,da,N)
+    sample = sample_spherical_surface(N)
     
     ra,dec = zip(*sample)
+    ra=np.array(ra)
+    dec=np.array(dec)
     
-    plt.plot(ra,dec,'.',color='blue')
-    plt.xlim([205,225])
-    plt.ylim([50,60])
+    plt.plot(ra,np.sin(dec*2.0*math.pi/360.0)*90.0,'.',color='blue')
     plt.xlabel('RA')
     plt.ylabel('DEC')
+    plt.ylim([-90,90])
+    plt.xlim([0,360])
     plt.show()
     
 
-def sample_spherical_surface(ra, dec, da, N_points):
+def sample_spherical_surface(N_points):
     '''
     Randomly sample the sky.
     
