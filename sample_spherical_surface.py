@@ -49,14 +49,14 @@ def sample_spherical_surface(N_points):
     '''
 
     from numpy import random
-    from numpy import sin, cos
+    from numpy import sin, cos, arccos
     from math import pi
 
     ran1 = random.rand(N_points) #oversample, to account for box sample  
     ran2 = random.rand(N_points) #oversample, to account for box sample
 
     ran1 = ran1 * 2.0 * pi #convert to radians
-    ran2 = np.arccos(2.0 * ran2 - 1.0) - 0.5*pi #convert to radians
+    ran2 = arccos(2.0 * ran2 - 1.0) - 0.5*pi #convert to radians
 
     ran1 = ran1 * 360.0 / (2.0 * pi) #convert to degrees 
     ran2 = ran2 * 360.0 / (2.0 * pi) #convert to degrees

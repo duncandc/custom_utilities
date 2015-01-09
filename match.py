@@ -31,15 +31,16 @@ def match(x,y):
     if len(np.unique(y))!=len(y):
         "error: second array is not a unique array! returning no matches."
         return None
-        
-    mask = np.where(np.in1d(y,x)==True)
     
-    index_x = np.argsort(x)
-    sorted_x = x[index_x]
-    ind_x = np.searchsorted(sorted_x,y[mask])
+    mask = np.where(np.in1d(x,y)==True)[0]
     
-    matches = index_x[ind_x]
-    matched = mask
+    index_y = np.argsort(y)
+    sorted_y = y[index_y]
+    ind_y = np.searchsorted(sorted_y,x[mask])
+    ind_y = index_y[ind_y]
+    
+    matched = ind_y
+    matches = mask
     
     return matches, matched
     

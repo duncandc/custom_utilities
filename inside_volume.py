@@ -46,7 +46,7 @@ def main():
     y_inside = y[inside_points]
     z_inside = z[inside_points]
     
-    '''
+    
     #plot the points which fall within the cylinders
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -55,7 +55,7 @@ def main():
     ax.set_ylim([0,100])
     ax.set_zlim([0,100])
     plt.show()
-    '''
+    
     
 
 def inside_volume(shapes, points, period=None):

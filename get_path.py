@@ -5,7 +5,7 @@
 #Yale University
 #Setup file paths for common systems I work on.
 
-__all__=['get_data_path','get_output_path','get_plot_path']
+__all__=['get_base_path','get_data_path','get_output_path','get_plot_path']
 
 def get_system():
     import platform
@@ -15,9 +15,29 @@ def get_system():
     
     return node
 
-def get_data_path():
+def get_base_path(node=None):
 
-    node = get_system()
+    if node==None: node = get_system()
+
+    if node=='donuts':
+        path = '/scratch/dac29/'
+    elif node=='donut-hole':
+        path = '/Users/duncan/Documents/'
+    elif node=='rgot':
+        path = '/scratch/dac29/'
+    elif node=='esca':
+        path = '/scratch/dac29/'
+    elif node=='login-0-0':
+        path = '/home/fas/padmanabhan/dac29/scratch/'
+    else:
+        return 'error: unknown data directory for this enviorment!'
+
+    return path
+
+
+def get_data_path(node=None):
+
+    if node==None: node = get_system()
 
     if node=='donuts':
         path = '/scratch/dac29/data/'
@@ -34,9 +54,9 @@ def get_data_path():
 
     return path
 
-def get_output_path():
+def get_output_path(node=None):
 
-    node = get_system()
+    if node==None: node = get_system()
 
     if node=='donuts':
         path = '/scratch/dac29/output/'
@@ -53,9 +73,9 @@ def get_output_path():
 
     return path
 
-def get_plot_path():
+def get_plot_path(node=None):
 
-    node = get_system()
+    if node==None: node = get_system()
 
     if node=='donuts':
         path = '/scratch/dac29/plots/'
