@@ -15,15 +15,17 @@ __all__=['match2']
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def match2(x, y, period=None):
+def match2(x, y):
     """
     for each x, return the matches in y
     
     Parameters
     ==========
     x, array_like
+        integer array
     
     y, array_like
+        integer array
     
     Return
     ======
@@ -32,14 +34,24 @@ def match2(x, y, period=None):
     list of indices in y which match.
     """
     
+    cdef long [:] cx = x
+    cdef long [:] cy = y
+    cdef int i,j
+    
+    Nx = len(x)
+    Ny = len(y)
+    
     #initialize list to store result in
     result = []
-    for i in range(0,len(x)):
+    for i in range(Nx):
         result.append([])
     
     #loop through each object in x and check for a match in y
-    for i in range(0,len(x)):
-        for j in range(0,len(y)):
-            if x[i]==y[j]: result[i].append(j)
+    for i in range(Nx):
+        xx = cx[i]
+        for j in range(Ny):
+            if xx==cy[j]: result[i].append(j)
     
     return result
+    
+
