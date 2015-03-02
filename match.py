@@ -15,22 +15,23 @@ def main():
     print np.all(x[match_into_y]==y[matched_y])
 
 def match(x,y):
-    '''
-    determines the indices of matches in list one into list two
+    """
+    determines the indices of matches in list 'x' into list 'y'
     
-    paramters
+    parameters
+    =========
     x: list to be matched
     y: unique list to matched against
     
-    retruns:
-    matches: indices in list one that return matches into list 2
-    matched: indices of list 2
-    '''
+    returns
+    =======
+    matches: indices in list one that return matches into 'y'
+    matched: indices of list 'y' with matches
+    """
     
     #check to make sure the second list is unique
     if len(np.unique(y))!=len(y):
-        "error: second array is not a unique array! returning no matches."
-        return None
+        rasie ValueError("error: second array is not a unique array! returning no matches.")
     
     mask = np.where(np.in1d(x,y)==True)[0]
     
