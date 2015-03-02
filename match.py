@@ -31,7 +31,7 @@ def match(x,y):
     
     #check to make sure the second list is unique
     if len(np.unique(y))!=len(y):
-        rasie ValueError("error: second array is not a unique array! returning no matches.")
+        raise ValueError("error: second array is not a unique array! returning no matches.")
     
     mask = np.where(np.in1d(x,y)==True)[0]
     
