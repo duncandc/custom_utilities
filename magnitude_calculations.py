@@ -8,7 +8,7 @@ Functions that compute quantities dealing with magnitudes.
 
 from __future__ import division
 
-__all__=['apparent_to_absolute_magnitude','luminosity_to_absolute_magnitude','absolute_magnitude_to_luminosity','absolute_magnitude_lim','get_sun_mag']
+__all__=['apparent_to_absolute_magnitude','absolute_to_apparent_magnitude','luminosity_to_absolute_magnitude','absolute_magnitude_to_luminosity','absolute_magnitude_lim','get_sun_mag']
 
 import numpy as np
 
@@ -33,6 +33,28 @@ def apparent_to_absolute_magnitude(m, d_L):
     M = m - 5.0*(np.log10(d_L)+5.0)
     
     return M
+
+
+def absolute_to_apparent_magnitude(M, d_L):
+    """
+    calculate the apparent magnitude given an absolute magnitude
+    
+    Parameters
+    ----------
+    M: array_like
+        absolute magnitude
+    
+    d_L: array_like
+        luminosity distance to object in Mpc
+    
+    Returns
+    -------
+    mag: np.array of apparent magnitudes
+    """
+    
+    m = M + 5.0*(np.log10(d_L)+5.0)
+    
+    return m
 
 
 def luminosity_to_absolute_magnitude(L, band, system='SDSS_Blanton_2003_z0.1'):
