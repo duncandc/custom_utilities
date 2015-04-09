@@ -42,8 +42,21 @@ class Log_Schechter():
         norm = np.log(10.0)*self.phi0
         val = norm*(10.0**((x-self.x0)*(1.0+self.alpha)))*np.exp(-10.0**(x-self.x0))
         return val
-        
+
+class Log_Super_Schechter():
     
+    def __init__(self, phi0, x0, alpha1, alpha2):
+        self.phi0 = phi0
+        self.x0 = x0
+        self.alpha1 = alpha1
+        self.alpha2 = alpha2
+    
+    def __call__(self, x):
+        x = np.asarray(x)
+        x = x.astype(float)
+        norm = np.log(10.0)*self.phi0
+        val = norm*(10.0**((x-self.x0)*(1.0+self.alpha1)))*np.exp(-10.0**(self.alpha2*(x-self.x0)))
+        return val
 
 class Mag_Schecter():
     
@@ -74,16 +87,17 @@ class Double_Schechter():
         x = np.asarray(x)
         x = x.astype(float)
         norm = self.x0
-        val = norm * np.exp(-x)* (self.phi1*(x/self.x0)**self.alpha1 +\
-                                  self.phi2*(x/self.x0)**self.alpha2)
+        val = norm * np.exp(-x)* (self.phi1*(x/self.x1)**self.alpha1 +\
+                                  self.phi2*(x/self.x2)**self.alpha2)
         return val
 
 class Log_Double_Schechter():
     
-    def __init__(self, x0, phi1, phi2, alpha1, alpha2):
+    def __init__(self, x1, x2, phi1, phi2, alpha1, alpha2):
         self.phi1 = phi1
         self.phi2 = phi2
-        self.x0 = x0
+        self.x1 = x1
+        self.x2 = x2
         self.alpha1 = alpha1
         self.alpha2 = alpha2
     
@@ -91,9 +105,11 @@ class Log_Double_Schechter():
         x = np.asarray(x)
         x = x.astype(float)
         norm = np.log(10.0)
-        val = norm * np.exp(-10.0**(x - self.x0)) * 10.0**(x - self.x0) *\
-              (self.phi1 * (10.0**((x - self.x0) * self.alpha1)) +\
-               self.phi2 * (10.0**((x - self.x0) * self.alpha2)))
+        val = norm *\
+              (np.exp(-10.0**(x - self.x1)) * 10.0**(x - self.x1) *\
+                   self.phi1 * (10.0**((x - self.x1) * self.alpha1)) +\
+               np.exp(-10.0**(x - self.x2)) * 10.0**(x - self.x2) *\
+                   self.phi2 * (10.0**((x - self.x2) * self.alpha2)))
         return val
 
 
