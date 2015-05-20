@@ -69,7 +69,7 @@ class Mag_Schecter():
         x = np.asarray(x)
         x = x.astype(float)
         norm = (2.0/5.0)*self.phi0*np.log(10.0)
-        val = norm*(10.0**(2.5*(self.m0-m)))**(self.alpha+1.0)*np.exp(-10.0**(2.5*(self.m0-m)))
+        val = norm*(10.0**(2.5*(self.m0-x)))**(self.alpha+1.0)*np.exp(-10.0**(2.5*(self.m0-x)))
         return val
 
 
