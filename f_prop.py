@@ -29,9 +29,9 @@ def f_prop(prop,prop_bins,group_1,group_2,mask):
     
     f = np.zeros(len(prop_bins)-1)
 
-    if group_1.dtype==bool
+    if group_1.dtype==bool:
         group_1 = np.where(group_1==True)[0]
-    if group_2.dtype==bool
+    if group_2.dtype==bool:
         group_2 = np.where(group_2==True)[0]
 
     group_1_mask = mask[group_1]

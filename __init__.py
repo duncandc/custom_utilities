@@ -1,6 +1,6 @@
 __all__ = ["match","inside","spherematch","sample_ra_dec_box","sample_spherical_cap",\
            "sample_spherical_surface","get_path","histogram2d","f_prop",\
-           "magnitude_calculations","binned_std","schechter_function"]
+           "magnitude_calculations","binned_std","schechter_function","fitting","statistics"]
 
 from match import match
 from inside import inside
@@ -22,5 +22,7 @@ from magnitude_calculations import absolute_magnitude_to_luminosity
 from magnitude_calculations import absolute_magnitude_lim
 from magnitude_calculations import get_sun_mag
 from ascii_reader import read_ascii
-from binned_std import binned_std
 import schechter_function
+import fitting
+import plotting
+import statistics
