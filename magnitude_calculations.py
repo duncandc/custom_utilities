@@ -195,3 +195,8 @@ def get_sun_mag(filter,system):
         raise ValueError('Filter system not included in this package.')
 
 
+def get_vmax(M,m,cosmo,w):
+
+    
+    Vmax = (w/3.0)*(dmax/(1.0+z))**3.0
+
