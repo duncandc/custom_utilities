@@ -6,7 +6,7 @@
 import numpy as np
 from scipy.special import gammainc as G #incomplete gamma function
 
-__all__=['Schechter','Log_Schechter','Mag_Schechter','Double_Schechter','Log_Double_Schechter']
+__all__=['Schechter','Log_Schechter','Mag_Schechter','Double_Schechter','Log_Double_Schechter','Double_Mag_Schechter']
 
 ####single component schechter functions##################################################
 class Schechter():
@@ -58,7 +58,7 @@ class Log_Super_Schechter():
         val = norm*(10.0**((x-self.x0)*(1.0+self.alpha1)))*np.exp(-10.0**(self.alpha2*(x-self.x0)))
         return val
 
-class Mag_Schecter():
+class Mag_Schechter():
     
     def __init__(self, phi0, m0, alpha):
         self.phi0 = phi0
@@ -69,7 +69,7 @@ class Mag_Schecter():
         x = np.asarray(x)
         x = x.astype(float)
         norm = (2.0/5.0)*self.phi0*np.log(10.0)
-        val = norm*(10.0**(2.5*(self.m0-x)))**(self.alpha+1.0)*np.exp(-10.0**(2.5*(self.m0-x)))
+        val = norm*(10.0**(0.4*(self.m0-x)))**(self.alpha+1.0)*np.exp(-10.0**(0.4*(self.m0-x)))
         return val
 
 
@@ -110,6 +110,23 @@ class Log_Double_Schechter():
                    self.phi1 * (10.0**((x - self.x1) * self.alpha1)) +\
                np.exp(-10.0**(x - self.x2)) * 10.0**(x - self.x2) *\
                    self.phi2 * (10.0**((x - self.x2) * self.alpha2)))
+        return val
+
+class Double_Mag_Schechter():
+    
+    def __init__(self, phi1, phi2, m1, m2, alpha1, alpha2):
+        self.phi1 = phi1
+        self.m1 = m1
+        self.alpha1 = alpha1
+        self.phi2 = phi2
+        self.m2 = m2
+        self.alpha2 = alpha2
+    
+    def __call__(self, x):
+        x = np.asarray(x)
+        x = x.astype(float)
+        norm = 0.4*np.log(10)
+        val = norm*(np.exp(-10**(-0.4*(x-self.m1)))*self.phi1*10**(-0.4*(x-self.m1)*(self.alpha1+1))+np.exp(-10**(-0.4*(x-self.m2)))*self.phi2*10**(-0.4*(x-self.m2)*(self.alpha2+1)))
         return val
 
 
