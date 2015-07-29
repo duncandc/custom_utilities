@@ -29,6 +29,8 @@ def get_base_path(node=None):
         path = '/scratch/dac29/'
     elif node=='login-0-0':
         path = '/home/fas/padmanabhan/dac29/scratch/'
+    elif node=='omega':
+        path = '/home/fas/padmanabhan/dac29/scratch/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
@@ -49,6 +51,8 @@ def get_data_path(node=None):
         path = '/scratch/dac29/data/'
     elif node=='login-0-0':
         path = '/home/fas/padmanabhan/dac29/scratch/data/'
+    elif node=='omega':
+        path = '/home/fas/padmanabhan/dac29/scratch/data/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
@@ -68,6 +72,8 @@ def get_output_path(node=None):
         path = '/scratch/dac29/output/'
     elif node=='login-0-0':
         path = '/home/fas/padmanabhan/dac29/scratch/output/'
+    elif node=='omega':
+        path = '/home/fas/padmanabhan/dac29/scratch/output/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
@@ -86,6 +92,8 @@ def get_plot_path(node=None):
     elif node=='esca':
         path = '/scratch/dac29/plots/'
     elif node=='login-0-0':
+        path = '/home/fas/padmanabhan/dac29/scratch/plots/'
+    elif node=='omega':
         path = '/home/fas/padmanabhan/dac29/scratch/plots/'
     else:
         return 'error: unknown data directory for this enviorment!'
