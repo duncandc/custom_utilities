@@ -5,18 +5,32 @@
 #Yale University
 #Setup file paths for common systems I work on.
 
-__all__=['get_base_path','get_data_path','get_output_path','get_plot_path']
+__all__=['get_system','get_base_path','get_data_path','get_output_path','get_plot_path']
+
 
 def get_system():
-    import platform
-    node = platform.node()
+    """
+    get the name of the system
+    """
     
-    node = node.split('.')[0]
+    import os
+    path_to_home = os.getenv("HOME")
+    
+    node = None
+    if os.path.isfile(os.getenv("HOME")+'/.donut-hole'): node = 'donut-hole'
+    elif os.path.isfile(os.getenv("HOME")+'/.donuts'): node = 'donuts'
+    elif os.path.isfile(os.getenv("HOME")+'/.omega'): node = 'omega'
+    elif os.path.isfile(os.getenv("HOME")+'/.esca'): node = 'esca'
+    elif os.path.isfile(os.getenv("HOME")+'/.rgot'): node = 'rgot'
+    else: raise ValueError('unknown system.')
     
     return node
 
 def get_base_path(node=None):
-
+    """
+    get the base path for the system
+    """
+    
     if node==None: node = get_system()
 
     if node=='donuts':
@@ -27,10 +41,8 @@ def get_base_path(node=None):
         path = '/scratch/dac29/'
     elif node=='esca':
         path = '/scratch/dac29/'
-    elif node=='login-0-0':
-        path = '/home/fas/padmanabhan/dac29/scratch/'
     elif node=='omega':
-        path = '/home/fas/padmanabhan/dac29/scratch/'
+        path = '/home/fas/padmanabhan/dac29/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
@@ -38,7 +50,10 @@ def get_base_path(node=None):
 
 
 def get_data_path(node=None):
-
+    """
+    get the base path to data storage for the system
+    """
+    
     if node==None: node = get_system()
 
     if node=='donuts':
@@ -49,8 +64,6 @@ def get_data_path(node=None):
         path = '/scratch/dac29/data/'
     elif node=='esca':
         path = '/scratch/dac29/data/'
-    elif node=='login-0-0':
-        path = '/home/fas/padmanabhan/dac29/scratch/data/'
     elif node=='omega':
         path = '/home/fas/padmanabhan/dac29/scratch/data/'
     else:
@@ -59,7 +72,10 @@ def get_data_path(node=None):
     return path
 
 def get_output_path(node=None):
-
+    """
+    get the base path to output storage for the system
+    """
+    
     if node==None: node = get_system()
 
     if node=='donuts':
@@ -70,8 +86,6 @@ def get_output_path(node=None):
         path = '/scratch/dac29/output/'
     elif node=='esca':
         path = '/scratch/dac29/output/'
-    elif node=='login-0-0':
-        path = '/home/fas/padmanabhan/dac29/scratch/output/'
     elif node=='omega':
         path = '/home/fas/padmanabhan/dac29/scratch/output/'
     else:
@@ -79,8 +93,12 @@ def get_output_path(node=None):
 
     return path
 
-def get_plot_path(node=None):
 
+def get_plot_path(node=None):
+    """
+    get the base path to plot storage for the system
+    """
+    
     if node==None: node = get_system()
 
     if node=='donuts':
@@ -91,11 +109,11 @@ def get_plot_path(node=None):
         path = '/scratch/dac29/plots/'
     elif node=='esca':
         path = '/scratch/dac29/plots/'
-    elif node=='login-0-0':
-        path = '/home/fas/padmanabhan/dac29/scratch/plots/'
     elif node=='omega':
         path = '/home/fas/padmanabhan/dac29/scratch/plots/'
     else:
         return 'error: unknown data directory for this enviorment!'
 
     return path
+
+
