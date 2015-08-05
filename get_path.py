@@ -8,23 +8,28 @@
 __all__=['get_system','get_base_path','get_data_path','get_output_path','get_plot_path']
 
 
+def known_systems():
+    return ['donuts', 'donut-hole', 'esca', 'rgot', 'omega']
+
+
 def get_system():
     """
     get the name of the system
     """
     
-    import os
+    import os, sys
     path_to_home = os.getenv("HOME")
     
-    node = None
-    if os.path.isfile(os.getenv("HOME")+'/.donut-hole'): node = 'donut-hole'
-    elif os.path.isfile(os.getenv("HOME")+'/.donuts'): node = 'donuts'
-    elif os.path.isfile(os.getenv("HOME")+'/.omega'): node = 'omega'
-    elif os.path.isfile(os.getenv("HOME")+'/.esca'): node = 'esca'
-    elif os.path.isfile(os.getenv("HOME")+'/.rgot'): node = 'rgot'
-    else: raise ValueError('unknown system.')
+    host = os.popen('echo $HOSTNAME').read()
+    host = host.split('.')[0]
     
-    return node
+    if host in known_systems(): return host
+    else:
+        host = None
+        if os.path.isfile(os.getenv("HOME")+'/.donut-hole'): host = 'donut-hole'
+        elif os.path.isfile(os.getenv("HOME")+'/.omega'): host = 'omega'
+        else: raise ValueError('unknown system.')
+        return host
 
 def get_base_path(node=None):
     """
